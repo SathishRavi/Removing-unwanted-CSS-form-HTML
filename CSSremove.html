@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<style>
+h6{
+	color:red;
+}
+p{
+	font-family:arial;
+	}
+	
+</style>
+</head>
+
+<body>
+<h6> Satish here</h6>
+<textarea id="textbox"></textarea> <button id="create">Create file</button> <a download="info.txt" id="downloadlink" style="display: none">Download</a>
+</body>
+<script src="jquery-1.10.2.min.js" type="text/jscript"></script>
+<script>
+
+// using CSS
+function cssRecursive(e) {
+  var cssList = css(e);
+  for (var i = 0; i < e.children.length; ++i) {
+    var childElement = e.children[i];
+    cssList = union(cssList, cssRecursive(childElement));
+  }
+  return cssList;
+}
+
+function css(a) {
+  var sheets = document.styleSheets,
+    o = [];
+  a.matches = a.matches || a.webkitMatchesSelector || a.mozMatchesSelector || a.msMatchesSelector || a.oMatchesSelector;
+  for (var i in sheets) {
+    var rules = sheets[i].rules || sheets[i].cssRules;
+    for (var r in rules) {
+      if (a.matches(rules[r].selectorText)) {
+        o.push(rules[r].cssText);
+      }
+    }
+  }
+  return o;
+}
+
+function union(x, y) {
+  return unique(x.concat(y));
+};
+
+function unique(x) {
+  return x.filter(function(elem, index) {
+    return x.indexOf(elem) == index;
+  });
+};
+
+var allCss = cssRecursive(document.body);
+for (var i = 0; i < allCss.length; ++i) {
+  var cssRule = allCss[i];
+  console.log(cssRule);
+  $('#textbox').append(cssRule);
+}
+
+
+(function () {
+var textFile = null,
+  makeTextFile = function (text) {
+    var data = new Blob([text], {type: 'text/plain'});
+
+    // If we are replacing a previously generated file we need to
+    // manually revoke the object URL to avoid memory leaks.
+    if (textFile !== null) {
+      window.URL.revokeObjectURL(textFile);
+    }
+
+    textFile = window.URL.createObjectURL(data);
+
+    return textFile;
+  };
+
+  var create = document.getElementById('create'),
+    textbox = document.getElementById('textbox');
+
+  create.addEventListener('click', function () {
+    var link = document.getElementById('downloadlink');
+    link.href = makeTextFile(textbox.value);
+    link.style.display = 'block';
+  }, false);
+})();
+
+</script>
+</html>
